@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "rwa-compliance-backend",
   "version": "1.0.0",
   "description": "RWA Compliance Guardian Backend API",
   "main": "server.js",
@@ -12,12 +12,14 @@
     "casper",
     "rwa",
     "compliance",
-    "ai"
+    "ai",
+    "hackathon"
   ],
   "author": "Aryan Suthar",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "cors": "^2.8.6",
+    "axios": "^1.11.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "uuid": "^14.0.1"
