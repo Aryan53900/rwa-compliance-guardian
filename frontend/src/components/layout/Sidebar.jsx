@@ -7,7 +7,16 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
+const navigate = useNavigate();
+const { logout } = useAuth();
+
+const handleLogout = () => {
+  logout();
+  navigate("/login");
+};
 const menuItems = [
   {
     name: "Dashboard",
@@ -82,10 +91,22 @@ function Sidebar() {
       </div>
 
       {/* Logout */}
-      <button className="flex items-center justify-center gap-2 py-3 border-2 border-black bg-red-400 hover:bg-red-500 font-semibold">
-        <LogOut size={18} />
-        Logout
-      </button>
+      <button
+  onClick={handleLogout}
+  className="
+    w-full
+    bg-red-500
+    text-white
+    py-3
+    border-2
+    border-black
+    font-bold
+    hover:bg-red-600
+    transition
+  "
+>
+  Logout
+</button>
 
     </aside>
   );
