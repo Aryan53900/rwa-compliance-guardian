@@ -1,9 +1,12 @@
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+
 import ComplianceForm from "../components/compliance/ComplianceForm";
 import ResultCard from "../components/compliance/ResultCard";
 import { useCompliance } from "../context/ComplianceContext";
-import { toast } from "react-toastify";
-import { generateExplanation } from "../services/gemini";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function NewCheck() {
   const [result, setResult] = useState(null);
@@ -15,54 +18,12 @@ function NewCheck() {
     setLoading(true);
 
     try {
-      // Fake AI processing delay
-      await new Promise((resolve) => setTimeout(resolve, 2500));
-
-      const restrictedCountries = [
-        "Iran",
-        "North Korea",
-        "Syria",
-        "Russia",
-      ];
-
-      const isRestricted = restrictedCountries.some(
-        (country) =>
-          country.toLowerCase() ===
-          formData.investorCountry.toLowerCase()
+      const response = await axios.post(
+        `${API_URL}/api/check`,
+        formData
       );
 
-      const generatedResult = {
-        status: isRestricted ? "FAIL" : "PASS",
-        risk: isRestricted ? 92 : 18,
-        complianceId: `CMP-${Math.floor(
-          1000 + Math.random() * 9000
-        )}`,
-        blockchainHash:
-          "0x" +
-          Math.random()
-            .toString(16)
-            .substring(2, 18)
-            .toUpperCase(),
-        explanation: "",
-      };
-
-      // Try Gemini
-      try {
-        generatedResult.explanation = await generateExplanation({
-          assetType: formData.assetType,
-          wallet: formData.wallet,
-          investorCountry: formData.investorCountry,
-          risk: generatedResult.risk,
-          status: generatedResult.status,
-        });
-      } catch (err) {
-        console.error("Gemini failed:", err);
-
-        generatedResult.explanation =
-          generatedResult.status === "PASS"
-            ? "The submitted wallet and investor jurisdiction passed the compliance checks. No major AML or sanctions risks were detected."
-            : "The submitted transaction contains high-risk compliance indicators. Manual review is recommended before proceeding.";
-      }
+      const generatedResult = response.data;
 
       setResult(generatedResult);
 
@@ -84,7 +45,8 @@ function NewCheck() {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong. Please try again.");
+
+      toast.error("Unable to connect to backend.");
     } finally {
       setLoading(false);
     }

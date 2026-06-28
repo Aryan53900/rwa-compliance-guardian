@@ -16,7 +16,6 @@ app.get("/", (req, res) => {
   });
 });
 
-// API Routes
 app.use("/api", complianceRoutes);
 
 module.exports = app;
