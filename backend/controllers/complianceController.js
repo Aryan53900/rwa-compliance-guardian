@@ -23,6 +23,7 @@ const checkCompliance = async (req, res) => {
       assetType,
       wallet,
       investorCountry,
+      jurisdiction,
     });
 
     // Ask Gemini for explanation
@@ -40,6 +41,7 @@ const checkCompliance = async (req, res) => {
       complianceId: `CMP-${uuidv4().slice(0, 8).toUpperCase()}`,
       status: result.status,
       risk: result.risk,
+      factors: result.factors,
       blockchainHash:
         "0x" +
         Math.random()

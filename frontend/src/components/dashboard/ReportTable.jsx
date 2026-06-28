@@ -1,29 +1,48 @@
 import Badge from "../ui/Badge";
 import { useCompliance } from "../../context/ComplianceContext";
 
-function ReportTable() {
+function ReportTable({ search, statusFilter }) {
   const { reports } = useCompliance();
 
-  if (reports.length === 0) {
+  const filteredReports = reports.filter((report) => {
+    const matchesSearch =
+      report.wallet.toLowerCase().includes(search.toLowerCase()) ||
+      report.asset.toLowerCase().includes(search.toLowerCase()) ||
+      report.country.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "ALL" ||
+      report.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  if (filteredReports.length === 0) {
     return (
-      <div className="bg-white border-4 border-black shadow-[8px_8px_0_black] p-10 text-center">
-        <h2 className="text-3xl font-bold mb-3">
-          📄 No Reports Yet
+      <div className="bg-white border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-12 text-center">
+
+        <div className="text-6xl mb-5">
+          📄
+        </div>
+
+        <h2 className="text-3xl font-black">
+          No Reports Found
         </h2>
 
-        <p className="text-gray-500">
-          Run a compliance check to generate reports.
+        <p className="text-gray-500 mt-3">
+          Try changing your search or run a new compliance check.
         </p>
+
       </div>
     );
   }
 
   return (
-    <div className="bg-white border-4 border-black shadow-[8px_8px_0_black] overflow-hidden">
+    <div className="bg-white border-4 border-black rounded-2xl shadow-[8px_8px_0_black] overflow-hidden">
 
       <table className="w-full">
 
-        <thead className="bg-gray-100 border-b-4 border-black">
+        <thead className="bg-[#CFE8D5] border-b-4 border-black">
 
           <tr>
 
@@ -63,11 +82,11 @@ function ReportTable() {
 
         <tbody>
 
-          {reports.map((report, index) => (
+          {filteredReports.map((report, index) => (
 
             <tr
               key={report.id}
-              className="border-b hover:bg-gray-50"
+              className="border-b hover:bg-gray-50 transition"
             >
 
               <td className="p-4 font-bold">

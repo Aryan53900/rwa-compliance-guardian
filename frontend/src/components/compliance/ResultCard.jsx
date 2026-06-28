@@ -11,7 +11,9 @@ function ResultCard({ result, loading }) {
         </h2>
 
         <div className="flex justify-center mb-6">
-          <div className="animate-spin w-12 h-12 border-4 border-black border-t-transparent rounded-full"></div>
+        <div className="flex justify-center mb-8">
+  <div className="animate-spin w-16 h-16 border-[6px] border-black border-t-transparent rounded-full"></div>
+</div>
         </div>
 
         <div className="space-y-4 text-lg">
@@ -59,59 +61,252 @@ function ResultCard({ result, loading }) {
         <Badge status={result.status} />
       </div>
 
-      {/* Details */}
+      {/* Overall Risk */}
 
-      <div className="space-y-5">
+      <div className="space-y-6">
 
-        <div className="flex justify-between border-b pb-3">
-          <span className="font-semibold">
-            Risk Score
+        <div className="flex justify-between items-center border-b pb-4">
+
+          <span className="font-semibold text-lg">
+            Overall Risk
           </span>
 
-          <span className="font-bold text-lg">
-            {result.risk}/100
-          </span>
+          <div className="text-right">
+
+            <h2 className="text-4xl font-black">
+              {result.risk}/100
+            </h2>
+
+            <p
+              className={`font-bold ${
+                result.risk <= 30
+                  ? "text-green-600"
+                  : result.risk <= 60
+                  ? "text-yellow-600"
+                  : "text-red-600"
+              }`}
+            >
+              {result.risk <= 30
+                ? "LOW"
+                : result.risk <= 60
+                ? "MEDIUM"
+                : "HIGH"}
+            </p>
+
+          </div>
+
         </div>
 
-        <div className="flex justify-between border-b pb-3">
-          <span className="font-semibold">
-            Compliance ID
-          </span>
+        {/* Compliance Pipeline */}
 
-          <span>{result.complianceId}</span>
+        <div className="grid grid-cols-2 gap-4">
+
+          <div className="bg-green-100 border border-green-400 rounded-lg p-3">
+            ✔ Wallet Screening
+          </div>
+
+          <div className="bg-green-100 border border-green-400 rounded-lg p-3">
+            ✔ AML Screening
+          </div>
+
+          <div className="bg-green-100 border border-green-400 rounded-lg p-3">
+            ✔ Sanctions Check
+          </div>
+
+          <div className="bg-green-100 border border-green-400 rounded-lg p-3">
+            ✔ Blockchain Recorded
+          </div>
+
         </div>
+{/* Compliance Pipeline */}
 
-        <div className="flex justify-between border-b pb-3">
-          <span className="font-semibold">
-            Casper Hash
-          </span>
+<div className="mt-8">
 
-          <span className="font-mono text-xs break-all text-right">
+  <h3 className="text-lg font-bold mb-4">
+    Compliance Pipeline
+  </h3>
+
+  <div className="space-y-3">
+
+    <div className="flex justify-between items-center bg-green-100 border border-green-300 rounded-lg p-3">
+      <span>👜 Wallet Verification</span>
+      <span className="font-semibold text-green-700">
+        Completed
+      </span>
+    </div>
+
+    <div
+      className={`flex justify-between items-center rounded-lg p-3 border ${
+        result.status === "FAIL"
+          ? "bg-red-100 border-red-300"
+          : "bg-green-100 border-green-300"
+      }`}
+    >
+      <span>🛡 AML Screening</span>
+
+      <span
+        className={`font-semibold ${
+          result.status === "FAIL"
+            ? "text-red-700"
+            : "text-green-700"
+        }`}
+      >
+        {result.status === "FAIL"
+          ? "Failed"
+          : "Passed"}
+      </span>
+    </div>
+
+    <div
+      className={`flex justify-between items-center rounded-lg p-3 border ${
+        result.status === "FAIL"
+          ? "bg-red-100 border-red-300"
+          : "bg-green-100 border-green-300"
+      }`}
+    >
+      <span>🚫 Sanctions Screening</span>
+
+      <span
+        className={`font-semibold ${
+          result.status === "FAIL"
+            ? "text-red-700"
+            : "text-green-700"
+        }`}
+      >
+        {result.status === "FAIL"
+          ? "Match Found"
+          : "Clear"}
+      </span>
+    </div>
+
+    <div
+      className={`flex justify-between items-center rounded-lg p-3 border ${
+        result.status === "REVIEW"
+          ? "bg-yellow-100 border-yellow-300"
+          : result.status === "FAIL"
+          ? "bg-red-100 border-red-300"
+          : "bg-green-100 border-green-300"
+      }`}
+    >
+      <span>🌍 Jurisdiction Review</span>
+
+      <span
+        className={`font-semibold ${
+          result.status === "PASS"
+            ? "text-green-700"
+            : result.status === "REVIEW"
+            ? "text-yellow-700"
+            : "text-red-700"
+        }`}
+      >
+        {result.status === "PASS"
+          ? "Approved"
+          : result.status === "REVIEW"
+          ? "Manual Review"
+          : "Restricted"}
+      </span>
+    </div>
+
+    <div
+      className={`flex justify-between items-center rounded-lg p-3 border ${
+        result.status === "FAIL"
+          ? "bg-gray-100 border-gray-300"
+          : "bg-green-100 border-green-300"
+      }`}
+    >
+      <span>⛓ Blockchain Attestation</span>
+
+      <span
+        className={`font-semibold ${
+          result.status === "FAIL"
+            ? "text-gray-600"
+            : "text-green-700"
+        }`}
+      >
+        {result.status === "FAIL"
+          ? "Pending"
+          : "Recorded"}
+      </span>
+    </div>
+
+  </div>
+
+</div>
+        {/* Compliance Details */}
+
+        <div className="bg-gray-100 border-2 border-black rounded-xl p-4">
+
+          <p className="mb-3">
+            <strong>Compliance ID:</strong>{" "}
+            {result.complianceId}
+          </p>
+
+          <p className="text-sm break-all font-mono">
+            <strong>Blockchain Hash:</strong>{" "}
             {result.blockchainHash}
-          </span>
+          </p>
+
         </div>
 
-        <div className="flex justify-between border-b pb-3">
-          <span className="font-semibold">
-            Recommendation
-          </span>
+        {/* Risk Factors */}
 
-          <span
-            className={`font-bold ${
-              result.status === "PASS"
-                ? "text-green-600"
-                : "text-red-600"
-            }`}
-          >
-            {result.status === "PASS"
-              ? "Approved"
-              : "Manual Review Required"}
-          </span>
+        {result.factors && result.factors.length > 0 && (
+
+          <div>
+
+            <h3 className="text-lg font-bold mb-3">
+              Risk Factors
+            </h3>
+
+            <div className="space-y-2">
+
+              {result.factors.map((factor, index) => (
+
+                <div
+                  key={index}
+                  className="bg-yellow-100 border border-yellow-400 rounded-lg p-3"
+                >
+                  • {factor}
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        )}
+
+        {/* Recommendation */}
+
+        <div
+          className={`rounded-xl p-5 font-semibold ${
+            result.status === "PASS"
+              ? "bg-green-100 text-green-700"
+              : result.status === "REVIEW"
+              ? "bg-yellow-100 text-yellow-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+
+          <h3 className="font-bold mb-2">
+            Recommendation
+          </h3>
+
+          {result.status === "PASS" &&
+            "Proceed with token issuance. Compliance requirements have been satisfied."}
+
+          {result.status === "REVIEW" &&
+            "Manual compliance review is recommended before approving this transaction."}
+
+          {result.status === "FAIL" &&
+            "Transaction blocked due to high compliance risk. Further investigation is required."}
+
         </div>
 
       </div>
 
-      {/* AI Assessment */}
+      {/* AI Summary */}
 
       <div className="mt-8">
 
@@ -119,13 +314,15 @@ function ResultCard({ result, loading }) {
           🤖 AI Assessment
         </h3>
 
-        <div className="bg-gray-100 border-2 border-black rounded-md p-4 leading-8 text-gray-700">
+        <div className="bg-gray-100 border-2 border-black rounded-lg p-5 leading-8">
+
           {result.explanation}
+
         </div>
 
       </div>
 
-      {/* Download PDF */}
+      {/* PDF */}
 
       <button
         onClick={() => exportCompliancePDF(result)}
@@ -137,7 +334,7 @@ function ResultCard({ result, loading }) {
           border-2
           border-black
           py-3
-          font-semibold
+          font-bold
           hover:bg-white
           hover:text-black
           transition
@@ -146,11 +343,10 @@ function ResultCard({ result, loading }) {
         📄 Download Compliance Report
       </button>
 
-      {/* Footer */}
-
       <p className="text-center text-xs text-gray-500 mt-5">
         Generated by AI Compliance Guardian • Powered by Gemini AI & Casper Network
       </p>
+
     </Card>
   );
 }

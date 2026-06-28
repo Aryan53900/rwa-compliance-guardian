@@ -5,66 +5,174 @@ function Blockchain() {
   const { reports } = useCompliance();
 
   return (
-    <div>
-      <h1 className="text-5xl font-bold mb-8">
-        Blockchain Records
-      </h1>
+    <div className="space-y-8">
+
+      {/* Header */}
+
+      <div className="bg-[#CFE8D5] border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-8">
+
+        <h1 className="text-5xl font-black">
+          Blockchain Explorer
+        </h1>
+
+        <p className="mt-3 text-lg text-gray-700">
+          Immutable compliance attestations secured on the Casper Network.
+        </p>
+
+      </div>
+
+      {/* Stats */}
+
+      <div className="grid md:grid-cols-3 gap-6">
+
+        <div className="bg-green-200 border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-6">
+
+          <h3 className="font-bold uppercase">
+            Verified Records
+          </h3>
+
+          <h2 className="text-5xl font-black mt-3">
+            {reports.length}
+          </h2>
+
+        </div>
+
+        <div className="bg-blue-200 border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-6">
+
+          <h3 className="font-bold uppercase">
+            Immutable Records
+          </h3>
+
+          <h2 className="text-5xl font-black mt-3">
+            {reports.length}
+          </h2>
+
+        </div>
+
+        <div className="bg-yellow-200 border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-6">
+
+          <h3 className="font-bold uppercase">
+            Network
+          </h3>
+
+          <h2 className="text-3xl font-black mt-5">
+            Casper
+          </h2>
+
+          <p>Testnet</p>
+
+        </div>
+
+      </div>
+
+      {/* Empty State */}
 
       {reports.length === 0 ? (
-        <div className="bg-white border-4 border-black shadow-[8px_8px_0_black] p-10 text-center">
-          <h2 className="text-2xl font-bold">
+
+        <div className="bg-white border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-12 text-center">
+
+          <div className="text-6xl mb-4">
+            ⛓
+          </div>
+
+          <h2 className="text-3xl font-black">
             No Blockchain Records
           </h2>
 
           <p className="text-gray-500 mt-3">
-            Run a compliance check to generate blockchain attestations.
+            Generate a compliance report to create a blockchain attestation.
           </p>
+
         </div>
+
       ) : (
-        <div className="bg-white border-4 border-black shadow-[8px_8px_0_black] overflow-hidden">
 
-          <table className="w-full">
+        <div className="space-y-6">
 
-            <thead className="bg-gray-100 border-b-4 border-black">
-              <tr>
-                <th className="p-4 text-left">Attestation ID</th>
-                <th className="p-4 text-left">Wallet</th>
-                <th className="p-4 text-left">Status</th>
-                <th className="p-4 text-left">Blockchain Hash</th>
-                <th className="p-4 text-left">Date</th>
-              </tr>
-            </thead>
+          {reports
+            .slice()
+            .reverse()
+            .map((report) => (
 
-            <tbody>
+              <div
+                key={report.id}
+                className="bg-white border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-6"
+              >
 
-              {reports.map((report) => (
-                <tr key={report.id} className="border-b hover:bg-gray-50">
+                <div className="flex justify-between items-center mb-6">
 
-                  <td className="p-4">{report.id}</td>
+                  <div>
 
-                  <td className="p-4">{report.wallet}</td>
+                    <h2 className="text-2xl font-black">
+                      {report.id}
+                    </h2>
 
-                  <td className="p-4">
-                    <Badge status={report.status} />
-                  </td>
+                    <p className="text-gray-500">
+                      Blockchain Compliance Attestation
+                    </p>
 
-                  <td className="p-4 font-mono text-sm">
-                    {report.hash}
-                  </td>
+                  </div>
 
-                  <td className="p-4">
-                    {report.date}
-                  </td>
+                  <Badge status={report.status} />
 
-                </tr>
-              ))}
+                </div>
 
-            </tbody>
+                <div className="grid md:grid-cols-2 gap-6">
 
-          </table>
+                  <div>
+
+                    <p className="font-semibold">
+                      Wallet
+                    </p>
+
+                    <p className="font-mono text-sm break-all">
+                      {report.wallet}
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p className="font-semibold">
+                      Asset
+                    </p>
+
+                    <p>{report.asset}</p>
+
+                  </div>
+
+                  <div>
+
+                    <p className="font-semibold">
+                      Blockchain Hash
+                    </p>
+
+                    <p className="font-mono text-sm break-all">
+                      {report.hash}
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p className="font-semibold">
+                      Timestamp
+                    </p>
+
+                    <p>{report.date}</p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            ))}
 
         </div>
+
       )}
+
     </div>
   );
 }

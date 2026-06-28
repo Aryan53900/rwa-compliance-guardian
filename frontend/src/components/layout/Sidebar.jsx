@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -7,16 +7,9 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../../context/AuthContext";
 
-const navigate = useNavigate();
-const { logout } = useAuth();
-
-const handleLogout = () => {
-  logout();
-  navigate("/login");
-};
 const menuItems = [
   {
     name: "Dashboard",
@@ -46,6 +39,14 @@ const menuItems = [
 ];
 
 function Sidebar() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <aside className="w-72 min-h-screen bg-[#CFE8D5] border-r-4 border-black flex flex-col justify-between p-6">
 
@@ -53,12 +54,12 @@ function Sidebar() {
       <div>
 
         <div className="mb-10">
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-          AI Compliance 
+          <h1 className="text-3xl font-bold">
+            AI Compliance
           </h1>
 
           <p className="text-sm text-gray-700 mt-2">
-             Platform
+            Platform
           </p>
         </div>
 
@@ -73,8 +74,7 @@ function Sidebar() {
                 to={item.path}
                 end={item.path === "/"}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 border-2 border-black font-semibold transition
-                  ${
+                  `flex items-center gap-3 px-4 py-3 border-2 border-black font-semibold transition ${
                     isActive
                       ? "bg-black text-white"
                       : "bg-white hover:bg-black hover:text-white"
@@ -92,21 +92,12 @@ function Sidebar() {
 
       {/* Logout */}
       <button
-  onClick={handleLogout}
-  className="
-    w-full
-    bg-red-500
-    text-white
-    py-3
-    border-2
-    border-black
-    font-bold
-    hover:bg-red-600
-    transition
-  "
->
-  Logout
-</button>
+        onClick={handleLogout}
+        className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 border-2 border-black font-bold hover:bg-red-600 transition"
+      >
+        <LogOut size={18} />
+        Logout
+      </button>
 
     </aside>
   );

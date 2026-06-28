@@ -39,14 +39,20 @@ function NewCheck() {
       });
 
       if (generatedResult.status === "PASS") {
-        toast.success("✅ Compliance Check Passed");
+        toast.success(
+          "✅ Compliance verification completed successfully."
+        );
       } else {
-        toast.error("❌ Compliance Check Failed");
+        toast.error(
+          "⚠ High-risk compliance issues detected. Manual review required."
+        );
       }
     } catch (error) {
       console.error(error);
 
-      toast.error("Unable to connect to backend.");
+      toast.error(
+        "⚠ Unable to connect to the Compliance API."
+      );
     } finally {
       setLoading(false);
     }
