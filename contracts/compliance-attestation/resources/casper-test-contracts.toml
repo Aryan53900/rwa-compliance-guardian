@@ -1,0 +1,6 @@
+last_updated = "2026-07-02T11:15:45Z"
+
+[[contracts]]
+name = "ComplianceAttestation"
+package_name = "ComplianceAttestation"
+package_hash = "hash-0e179dec639c35db76da16719be86f14f254645e3760456ddb9005f15ffbd56c"
