@@ -19,7 +19,7 @@ function NewCheck() {
 
     try {
       const response = await axios.post(
-        `${API_URL}/api/check`,
+        `${API_URL}/api/compliance/check`,
         formData
       );
 

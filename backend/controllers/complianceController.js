@@ -7,13 +7,10 @@ const blockchain = require("../services/blockchainService");
 // ===============================
 const checkCompliance = async (req, res) => {
   try {
-    const {
-      assetType,
-      wallet,
-      investorCountry,
-      jurisdiction,
-    } = req.body;
-
+    const assetType = req.body.assetType.trim();
+const wallet = req.body.wallet.trim();
+const investorCountry = req.body.investorCountry.trim();
+const jurisdiction = req.body.jurisdiction.trim();
     // Validation
     if (!assetType || !wallet || !investorCountry) {
       return res.status(400).json({
@@ -64,7 +61,11 @@ const checkCompliance = async (req, res) => {
       risk: result.risk,
       factors: result.factors,
       explanation,
-      blockchain: blockchainRecord,
+    
+      // Keep the same field name expected by the frontend
+      blockchainHash: `Attestation #${lastId}`,
+blockchainRecord,
+    
       timestamp: new Date().toISOString(),
     });
 

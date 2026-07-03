@@ -46,14 +46,17 @@ function runCommand(command) {
 // Parse CLI output
 // -------------------------
 function extractCallResult(output) {
-  const match = output.match(/Call result:\s*([\s\S]*)/);
-
-  if (!match) {
-    return output.trim();
+    // Remove ANSI color codes
+    output = output.replace(/\x1B\[[0-9;]*m/g, "");
+  
+    const match = output.match(/Call result:\s*(\d+)/);
+  
+    if (!match) {
+      return null;
+    }
+  
+    return match[1];
   }
-
-  return match[1].trim();
-}
 
 // -------------------------
 // Commands
@@ -62,24 +65,40 @@ function extractCallResult(output) {
 async function whoami() {
   return runCommand("whoami");
 }
+function extractAttestation(output) {
+  output = output.replace(/\x1B\[[0-9;]*m/g, "");
+
+  const match = output.match(/Call result:\s*({[\s\S]*})/);
+
+  if (!match) {
+    return null;
+  }
+
+  return JSON.parse(match[1]);
+}
 
 async function getLastId() {
-  const output = await runCommand(
-    "contract ComplianceAttestation get_last_id"
-  );
-
-  const result = extractCallResult(output);
-
-  return Number(result);
-}
-
-async function getAttestation(id) {
-  const output = await runCommand(
-    `contract ComplianceAttestation get_attestation --id ${id}`
-  );
-
-  return extractCallResult(output);
-}
+    const output = await runCommand(
+      "contract ComplianceAttestation get_last_id"
+    );
+  
+    const id = extractCallResult(output);
+  
+    if (!id) {
+      throw new Error(
+        "Couldn't parse last ID.\n\n" + output
+      );
+    }
+  
+    return Number(id);
+  }
+  async function getAttestation(id) {
+    const output = await runCommand(
+      `contract ComplianceAttestation get_attestation --id ${id}`
+    );
+  
+    return extractAttestation(output);
+  }
 
 async function storeAttestation(data) {
   const output = await runCommand(
@@ -91,7 +110,7 @@ async function storeAttestation(data) {
 --risk_score ${data.riskScore} \
 --result "${data.result}" \
 --timestamp "${data.timestamp}" \
---gas "2 CSPR"`
+--gas "5 CSPR"`
   );
 
   return output;
