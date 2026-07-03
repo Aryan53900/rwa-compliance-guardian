@@ -51,21 +51,48 @@ Keep the response under 100 words.
       "AI explanation unavailable."
     );
   } catch (error) {
+
     console.error(
       "Gemini Error:",
       error.response?.data || error.message
     );
-
+  
+    if (data.status === "PASS") {
+      return `
+  Overall Assessment:
+  The transaction appears compliant.
+  
+  Risk Analysis:
+  Only minor compliance factors were detected.
+  
+  Recommendation:
+  Proceed with onboarding while continuing routine monitoring.
+  `;
+    }
+  
+    if (data.status === "REVIEW") {
+      return `
+  Overall Assessment:
+  The transaction requires manual review.
+  
+  Risk Analysis:
+  Several moderate-risk indicators were identified.
+  
+  Recommendation:
+  Request additional documentation before approval.
+  `;
+    }
+  
     return `
-Overall Assessment:
-The submitted transaction has been evaluated successfully.
-
-Risk Analysis:
-No major compliance concerns were detected.
-
-Recommendation:
-Proceed with onboarding while maintaining periodic AML monitoring.
-`;
+  Overall Assessment:
+  The transaction has been flagged as high risk.
+  
+  Risk Analysis:
+  Critical compliance indicators triggered the automated risk engine.
+  
+  Recommendation:
+  Do not approve this transaction until a full AML investigation has been completed.
+  `;
   }
 }
 

@@ -1,27 +1,52 @@
-import StatCard from "../components/dashboard/StatCard";
-import { useCompliance } from "../context/ComplianceContext";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   ShieldCheck,
   TriangleAlert,
   Activity,
   FileSearch,
+  Database,
+  Cpu,
 } from "lucide-react";
+
+import StatCard from "../components/dashboard/StatCard";
+import { useCompliance } from "../context/ComplianceContext";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
   const { reports } = useCompliance();
 
+  const [dashboard, setDashboard] = useState({
+    totalAttestations: 0,
+    network: "Loading...",
+    aiModel: "Loading...",
+  });
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  const loadDashboard = async () => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/api/dashboard`
+      );
+
+      setDashboard(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const totalChecks = reports.length;
 
   const passCount = reports.filter(
-    (report) => report.status === "PASS"
-  ).length;
-
-  const reviewCount = reports.filter(
-    (report) => report.status === "REVIEW"
+    (r) => r.status === "PASS"
   ).length;
 
   const failCount = reports.filter(
-    (report) => report.status === "FAIL"
+    (r) => r.status === "FAIL"
   ).length;
 
   const passRate =
@@ -33,53 +58,55 @@ function Dashboard() {
     totalChecks === 0
       ? 0
       : Math.round(
-          reports.reduce(
-            (sum, report) => sum + report.risk,
-            0
-          ) / totalChecks
+          reports.reduce((a, b) => a + b.risk, 0) /
+            totalChecks
         );
 
   return (
     <div className="space-y-8">
 
-      {/* Hero */}
-
       <div className="bg-[#CFE8D5] border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-8">
 
         <h1 className="text-5xl font-black">
-          Welcome Back 
+          AI Compliance Dashboard
         </h1>
 
         <p className="text-xl mt-3 text-gray-700">
-          AI-powered Real World Asset Compliance Dashboard
+          Real-Time Blockchain Compliance Monitoring
         </p>
 
       </div>
 
-      {/* KPI Cards */}
-
-      <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6">
 
         <StatCard
-          title="Total Checks"
+          title="Compliance Checks"
           value={totalChecks}
-          subtitle="Compliance requests"
+          subtitle="Current Session"
           icon={<FileSearch />}
           color="bg-green-200"
         />
 
         <StatCard
+          title="Blockchain Records"
+          value={dashboard.totalAttestations}
+          subtitle="Casper Testnet"
+          icon={<Database />}
+          color="bg-blue-200"
+        />
+
+        <StatCard
           title="Pass Rate"
           value={`${passRate}%`}
-          subtitle="Successful checks"
+          subtitle="Successful Checks"
           icon={<ShieldCheck />}
-          color="bg-blue-200"
+          color="bg-yellow-200"
         />
 
         <StatCard
           title="Failed"
           value={failCount}
-          subtitle="High-risk cases"
+          subtitle="High Risk"
           icon={<TriangleAlert />}
           color="bg-red-200"
         />
@@ -87,73 +114,60 @@ function Dashboard() {
         <StatCard
           title="Average Risk"
           value={averageRisk}
-          subtitle="Overall risk score"
+          subtitle="Risk Score"
           icon={<Activity />}
-          color="bg-yellow-200"
+          color="bg-orange-200"
+        />
+
+        <StatCard
+          title="AI Model"
+          value="Gemini"
+          subtitle={dashboard.aiModel}
+          icon={<Cpu />}
+          color="bg-purple-200"
         />
 
       </div>
 
-      {/* Recent Activity */}
-
       <div className="bg-white border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-8">
 
         <h2 className="text-3xl font-black mb-6">
-          Recent Compliance Activity
+          System Status
         </h2>
 
-        {reports.length === 0 ? (
-          <p className="text-gray-500">
-            No compliance checks performed yet.
-          </p>
-        ) : (
-          <div className="space-y-4">
+        <div className="grid md:grid-cols-2 gap-5">
 
-            {reports
-              .slice(-5)
-              .reverse()
-              .map((report) => (
-                <div
-                  key={report.id}
-                  className="flex justify-between items-center border-b pb-4"
-                >
-                  <div>
+          <div className="bg-green-100 border-2 border-green-500 rounded-xl p-5">
+            <h3 className="font-bold">
+              Blockchain
+            </h3>
 
-                    <h3 className="font-bold">
-                      {report.asset}
-                    </h3>
+            <p className="mt-2">
+              ✅ Connected
+            </p>
 
-                    <p className="text-sm text-gray-500">
-                      {report.wallet}
-                    </p>
-
-                  </div>
-
-                  <div className="text-right">
-
-                    <p
-                      className={`font-bold ${
-                        report.status === "PASS"
-                          ? "text-green-600"
-                          : report.status === "REVIEW"
-                          ? "text-yellow-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {report.status}
-                    </p>
-
-                    <p className="text-sm">
-                      Risk {report.risk}
-                    </p>
-
-                  </div>
-
-                </div>
-              ))}
+            <p className="text-sm mt-1">
+              {dashboard.network}
+            </p>
 
           </div>
-        )}
+
+          <div className="bg-green-100 border-2 border-green-500 rounded-xl p-5">
+            <h3 className="font-bold">
+              AI Engine
+            </h3>
+
+            <p className="mt-2">
+              ✅ Connected
+            </p>
+
+            <p className="text-sm mt-1">
+              {dashboard.aiModel}
+            </p>
+
+          </div>
+
+        </div>
 
       </div>
 
