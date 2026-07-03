@@ -1,7 +1,10 @@
 const calculateRisk = require("../services/riskEngine");
 const { generateExplanation } = require("../services/gemini");
-const { v4: uuidv4 } = require("uuid");
+const blockchain = require("../services/blockchainService");
 
+// ===============================
+// POST /api/compliance/check
+// ===============================
 const checkCompliance = async (req, res) => {
   try {
     const {
@@ -11,6 +14,7 @@ const checkCompliance = async (req, res) => {
       jurisdiction,
     } = req.body;
 
+    // Validation
     if (!assetType || !wallet || !investorCountry) {
       return res.status(400).json({
         success: false,
@@ -18,7 +22,7 @@ const checkCompliance = async (req, res) => {
       });
     }
 
-    // Calculate risk
+    // Calculate Risk
     const result = calculateRisk({
       assetType,
       wallet,
@@ -26,7 +30,7 @@ const checkCompliance = async (req, res) => {
       jurisdiction,
     });
 
-    // Ask Gemini for explanation
+    // Gemini Explanation
     const explanation = await generateExplanation({
       assetType,
       wallet,
@@ -36,31 +40,116 @@ const checkCompliance = async (req, res) => {
       status: result.status,
     });
 
-    res.json({
+    // Store on Blockchain
+    await blockchain.storeAttestation({
+      wallet,
+      assetType,
+      jurisdiction,
+      investorCountry,
+      riskScore: result.risk,
+      result: result.status,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Get latest blockchain ID
+    const lastId = await blockchain.getLastId();
+
+    // Fetch stored record
+    const blockchainRecord = await blockchain.getAttestation(lastId);
+
+    return res.json({
       success: true,
-      complianceId: `CMP-${uuidv4().slice(0, 8).toUpperCase()}`,
+      complianceId: lastId,
       status: result.status,
       risk: result.risk,
       factors: result.factors,
-      blockchainHash:
-        "0x" +
-        Math.random()
-          .toString(16)
-          .substring(2, 18)
-          .toUpperCase(),
       explanation,
+      blockchain: blockchainRecord,
       timestamp: new Date().toISOString(),
     });
+
   } catch (error) {
-    console.error(error);
+    console.error("Compliance Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ===============================
+// GET /api/compliance/whoami
+// ===============================
+const whoami = async (req, res) => {
+  try {
+    const result = await blockchain.whoami();
+
+    res.json({
+      success: true,
+      output: result,
+    });
+  } catch (err) {
+    console.error(err);
 
     res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      error: err.message,
+    });
+  }
+};
+
+// ===============================
+// GET /api/compliance/last
+// ===============================
+const getLastId = async (req, res) => {
+  try {
+    const lastId = await blockchain.getLastId();
+
+    res.json({
+      success: true,
+      lastId,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+};
+
+// ===============================
+// GET /api/compliance/:id
+// ===============================
+const getAttestation = async (req, res) => {
+  try {
+    const result = await blockchain.getAttestation(req.params.id);
+
+    res.json({
+      success: true,
+      result,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      error: err.message,
     });
   }
 };
 
 module.exports = {
   checkCompliance,
+  whoami,
+  getLastId,
+  getAttestation,
 };
+console.log({
+  checkCompliance: typeof checkCompliance,
+  whoami: typeof whoami,
+  getLastId: typeof getLastId,
+  getAttestation: typeof getAttestation,
+});
