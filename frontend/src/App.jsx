@@ -2,14 +2,15 @@ import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import Layout from "./components/layout/Layout";
-import ProtectedRoute from "./components/ProtectedRoute";
+import WalletProtectedRoute from "./components/WalletProtectedRoute";
 
-import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NewCheck from "./pages/NewCheck";
 import Reports from "./pages/Reports";
 import Blockchain from "./pages/Blockchain";
 import Settings from "./pages/Settings";
+import About from "./pages/About";
+import ConnectWallet from "./pages/ConnectWallet";
 
 function App() {
   return (
@@ -18,14 +19,17 @@ function App() {
 
         {/* Public Route */}
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/connect-wallet"
+          element={<ConnectWallet />}
+        />
 
         {/* Protected Routes */}
 
         <Route
           path="/*"
           element={
-            <ProtectedRoute>
+            <WalletProtectedRoute>
               <Layout>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
@@ -33,9 +37,10 @@ function App() {
                   <Route path="/reports" element={<Reports />} />
                   <Route path="/blockchain" element={<Blockchain />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/about" element={<About />} />
                 </Routes>
               </Layout>
-            </ProtectedRoute>
+            </WalletProtectedRoute>
           }
         />
 
