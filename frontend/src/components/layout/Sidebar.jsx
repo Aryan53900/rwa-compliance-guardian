@@ -6,9 +6,10 @@ import {
   Blocks,
   Settings,
   LogOut,
+  Info,
 } from "lucide-react";
 
-import { useAuth } from "../../context/AuthContext";
+import { useWallet } from "../../context/WalletContext";
 
 const menuItems = [
   {
@@ -32,6 +33,11 @@ const menuItems = [
     icon: Blocks,
   },
   {
+    name: "About",
+    path: "/about",
+    icon: Info,
+  },
+  {
     name: "Settings",
     path: "/settings",
     icon: Settings,
@@ -40,11 +46,14 @@ const menuItems = [
 
 function Sidebar() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  // Changed from useAuth() to useWallet()
+  const { disconnectWallet } = useWallet();
+
+  // Changed logout handler
+  const handleDisconnect = () => {
+    disconnectWallet();
+    navigate("/connect-wallet");
   };
 
   return (
@@ -90,13 +99,13 @@ function Sidebar() {
 
       </div>
 
-      {/* Logout */}
+      {/* Disconnect Wallet */}
       <button
-        onClick={handleLogout}
+        onClick={handleDisconnect}
         className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 border-2 border-black font-bold hover:bg-red-600 transition"
       >
         <LogOut size={18} />
-        Logout
+        Disconnect Wallet
       </button>
 
     </aside>
