@@ -10,6 +10,20 @@ import {
 } from "lucide-react";
 
 import { useWallet } from "../../context/WalletContext";
+import { disconnectCasperWallet } from "../../services/walletService";
+
+const handleDisconnect = async () => {
+  try {
+    if (wallet.walletType === "Casper") {
+      await disconnectCasperWallet();
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  disconnectWallet();
+  navigate("/connect-wallet");
+};
 
 const menuItems = [
   {
@@ -48,7 +62,7 @@ function Sidebar() {
   const navigate = useNavigate();
 
   // Changed from useAuth() to useWallet()
-  const { disconnectWallet } = useWallet();
+  const { wallet, disconnectWallet } = useWallet();
 
   // Changed logout handler
   const handleDisconnect = () => {

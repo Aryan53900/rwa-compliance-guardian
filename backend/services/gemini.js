@@ -11,24 +11,77 @@ async function generateExplanation(data) {
 
   try {
     const prompt = `
-You are an expert AI Compliance Officer for Real World Assets (RWA).
+You are a Senior Compliance Officer working for a global Real World Asset (RWA) tokenization platform.
 
-Analyze the following compliance request.
+Your responsibility is to review investor onboarding requests and provide professional compliance reports similar to those produced by enterprise AML/KYC platforms.
 
-Asset Type: ${data.assetType}
-Wallet Address: ${data.wallet}
-Investor Country: ${data.investorCountry}
-Jurisdiction: ${data.jurisdiction}
-Risk Score: ${data.risk}
-Compliance Status: ${data.status}
+==================================================
+COMPLIANCE REQUEST
+==================================================
 
-Generate:
+Asset Type:
+${data.assetType}
 
-1. Compliance Assessment
-2. Risk Analysis
-3. Recommendation
+Wallet Address:
+${data.wallet}
 
-Keep the response under 100 words.
+Investor Country:
+${data.investorCountry}
+
+Jurisdiction:
+${data.jurisdiction}
+
+Compliance Status:
+${data.status}
+
+Risk Score:
+${data.risk}/100
+
+Risk Factors:
+${data.factors?.length ? data.factors.join(", ") : "No major risk factors detected."}
+
+==================================================
+
+Generate a professional compliance report.
+
+The report MUST contain these sections:
+
+Executive Summary
+
+Risk Analysis
+
+Compliance Decision
+
+Recommendation
+
+Next Steps
+
+Rules:
+
+• Maximum 180 words.
+• Sound like a senior compliance analyst.
+• Do NOT mention you are an AI.
+• Do NOT repeat the input values.
+• Give practical recommendations.
+• Make every response unique.
+• Match the tone to the compliance result.
+
+If Status = PASS:
+- Positive tone.
+- Mention low risk.
+- Recommend routine monitoring.
+
+If Status = REVIEW:
+- Neutral tone.
+- Mention enhanced due diligence.
+- Recommend manual verification.
+
+If Status = FAIL:
+- Serious tone.
+- Explain regulatory concerns.
+- Recommend blocking the transaction until investigation.
+
+Return plain text only.
 `;
 
     const response = await axios.post(
@@ -51,48 +104,67 @@ Keep the response under 100 words.
       "AI explanation unavailable."
     );
   } catch (error) {
-
     console.error(
       "Gemini Error:",
       error.response?.data || error.message
     );
-  
+
+    // Smart fallback responses
+
     if (data.status === "PASS") {
       return `
-  Overall Assessment:
-  The transaction appears compliant.
-  
-  Risk Analysis:
-  Only minor compliance factors were detected.
-  
-  Recommendation:
-  Proceed with onboarding while continuing routine monitoring.
-  `;
+Executive Summary:
+The compliance assessment indicates a low-risk onboarding request with no significant regulatory concerns identified.
+
+Risk Analysis:
+The automated compliance engine detected only minor observations that do not affect the overall approval decision.
+
+Compliance Decision:
+Approved.
+
+Recommendation:
+Proceed with token issuance while maintaining routine AML and transaction monitoring.
+
+Next Steps:
+Continue periodic compliance reviews according to internal policy.
+`;
     }
-  
+
     if (data.status === "REVIEW") {
       return `
-  Overall Assessment:
-  The transaction requires manual review.
-  
-  Risk Analysis:
-  Several moderate-risk indicators were identified.
-  
-  Recommendation:
-  Request additional documentation before approval.
-  `;
+Executive Summary:
+The transaction presents moderate compliance risk requiring additional verification before approval.
+
+Risk Analysis:
+Several indicators require enhanced due diligence to validate investor identity and transaction legitimacy.
+
+Compliance Decision:
+Manual Review Required.
+
+Recommendation:
+Collect additional KYC documentation and perform source-of-funds verification.
+
+Next Steps:
+Escalate the case to the compliance team before onboarding.
+`;
     }
-  
+
     return `
-  Overall Assessment:
-  The transaction has been flagged as high risk.
-  
-  Risk Analysis:
-  Critical compliance indicators triggered the automated risk engine.
-  
-  Recommendation:
-  Do not approve this transaction until a full AML investigation has been completed.
-  `;
+Executive Summary:
+The compliance engine identified significant regulatory concerns associated with this request.
+
+Risk Analysis:
+Multiple high-risk indicators triggered the automated risk assessment, making the transaction unsuitable for immediate approval.
+
+Compliance Decision:
+Rejected.
+
+Recommendation:
+Do not proceed until a complete AML investigation and compliance review have been completed.
+
+Next Steps:
+Block onboarding and escalate the case for regulatory investigation.
+`;
   }
 }
 

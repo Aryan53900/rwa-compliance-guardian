@@ -35,6 +35,7 @@ const jurisdiction = req.body.jurisdiction.trim();
       jurisdiction,
       risk: result.risk,
       status: result.status,
+      factors: result.factors,
     });
 
     // Store on Blockchain

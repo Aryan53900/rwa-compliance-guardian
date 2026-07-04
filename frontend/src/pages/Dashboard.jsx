@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import StatCard from "../components/dashboard/StatCard";
+import { useCompliance } from "../context/ComplianceContext";
+import { useWallet } from "../context/WalletContext";
+
 import axios from "axios";
 import {
   ShieldCheck,
@@ -9,13 +13,16 @@ import {
   Cpu,
 } from "lucide-react";
 
-import StatCard from "../components/dashboard/StatCard";
-import { useCompliance } from "../context/ComplianceContext";
+//import StatCard from "../components/dashboard/StatCard";
+//mport { useCompliance } from "../context/ComplianceContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
+  const { wallet, disconnectWallet } = useWallet();
+
   const { reports } = useCompliance();
+  //const { wallet } = useWallet();
 
   const [dashboard, setDashboard] = useState({
     totalAttestations: 0,
@@ -163,7 +170,19 @@ function Dashboard() {
 
             <p className="text-sm mt-1">
               {dashboard.aiModel}
-            </p>
+            </p><div className="bg-white border-4 border-black rounded-2xl shadow-[8px_8px_0_black] p-6">
+  <h2 className="text-2xl font-black mb-4">
+    Connected Wallet
+  </h2>
+
+  <p>
+    <strong>Type:</strong> {wallet.walletType}
+  </p>
+
+  <p className="break-all font-mono mt-2">
+    {wallet.walletAddress}
+  </p>
+</div>
 
           </div>
 
