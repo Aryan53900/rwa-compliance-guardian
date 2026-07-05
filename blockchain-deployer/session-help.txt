@@ -1,0 +1,59 @@
+Creates a new transaction for running session logic
+
+Usage: casper-client put-transaction session [OPTIONS] --wasm-path <PATH> --chain-name <NAME> --gas-price-tolerance <INTEGER> <--secret-key <PATH>|--initiator-address <HEX STRING>>
+
+Options:
+  -e, --show-simple-arg-examples
+          If passed, all other options are ignored and a set of examples of session-/payment-args is printed
+  -j, --show-json-args-examples
+          If passed, all other options are ignored and a set of examples of session-/payment-args-json is printed
+  -n, --node-address <HOST:PORT>
+          Hostname or IP and port of node on which HTTP service is running [default: http://localhost:7777]
+  -k, --secret-key <PATH>
+          Path to secret key file. If not provided, the transaction will not be signed and will remain invalid until signed, for example by running the `sign-transaction` subcommand.
+  -w, --wasm-path <PATH>
+          Path to compiled Wasm session code
+  -o, --output <PATH>
+          Path to output transaction file. If omitted, defaults to stdout. If the file already exists, the command will fail unless '--force' is also specified
+      --timestamp <TIMESTAMP>
+          RFC3339-like formatted timestamp, e.g. '2018-02-16 00:31:37'. If not provided, the current time will be used. Note that timestamp is UTC, not local. See https://docs.rs/humantime/latest/humantime/fn.parse_rfc3339_weak.html for more information.
+      --ttl <DURATION>
+          Time that the transaction will remain valid for. A transaction can only be included in a block between `timestamp` and `timestamp + ttl`. Input examples: '1hr 12min', '30min 50sec', '1day'. For all options, see https://docs.rs/humantime/latest/humantime/fn.parse_duration.html [default: 30min]
+  -T, --transferred-value <integer>
+          Transferred token value
+      --chain-name <NAME>
+          Name of the chain, to avoid the transaction from being accidentally or maliciously included in a different chain
+  -a, --session-arg <"NAME:TYPE='VALUE'" OR "NAME:TYPE=null">
+          For simple CLTypes, a named and typed arg which is passed to the Wasm code. To see an example for each type, run '--show-simple-arg-examples'. This arg can be repeated to pass multiple named, typed args, but can only be used for the following types: bool, i32, i64, u8, u32, u64, u128, u256, u512, unit, string, key, account_hash, uref, public_key, byte_list, byte_array_<NUM>, opt_bool, opt_i32, opt_i64, opt_u8, opt_u32, opt_u64, opt_u128, opt_u256, opt_u512, opt_unit, opt_string, opt_key, opt_account_hash, opt_uref, opt_public_key, opt_byte_list, opt_byte_array_<NUM>
+      --session-args-json <JSON ARRAY>
+          A JSON Array of named and typed args which is passed to the Wasm code. To see examples, run '--show-json-args-examples'.
+      --chunked-args <BYTES>
+          Chunked arg bytes as base16 '--show-json-args-examples'.
+      --session-entry-point <NAME>
+          Name of the method that will be used when calling the session contract
+  -p, --payment-amount <INTEGER>
+          Uses the standard-payment system contract. The value is the amount arg of the standard-payment contract
+      --initiator-address <HEX STRING>
+          Used to specify the account initiating the transaction. This can be a a public key, account hash, or an entity address. 
+      --pricing-mode <classic|reserved|fixed>
+          Used to identify the payment mode chosen to execute the transaction [default: classic] [possible values: classic, reserved, fixed]
+      --standard-payment <STRING>
+          Flag to determine if this transaction uses standard or custom payment.
+      --receipt <HEX STRING>
+          The digest representing the a previous reservation of funds to pay for the current transaction.
+  -g, --gas-price-tolerance <INTEGER>
+          The maximum gas price that the user is willing to pay for the transaction
+  -c, --additional-computation-factor <INTEGER>
+          User-specified additional computation factor for "fixed" pricing_mode [default: 0]
+      --install-upgrade
+          Flag to indicate if the Wasm is an install/upgrade
+      --min-bid-override
+          Flag to override the min bid staking amount check
+      --transaction-runtime <vm-casper-v1|vm-casper-v2>
+          Transaction runtime [default: vm-casper-v1] [possible values: vm-casper-v1, vm-casper-v2]
+      --id <STRING OR INTEGER>
+          JSON-RPC identifier, applied to the request and returned in the response. If not provided, a random integer will be assigned
+  -v...
+          Generates verbose output, e.g. prints the RPC request.  If repeated by using '-vv' then all output will be extra verbose, meaning that large JSON strings will be shown in full
+  -h, --help
+          Print help
