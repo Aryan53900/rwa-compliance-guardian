@@ -115,8 +115,8 @@ Dashboard, Reports, and Blockchain Explorer display the result.
 PDF compliance report can be downloaded.
 
 📷 Screenshots
-Login
-<img width="2500" height="1616" alt="image" src="https://github.com/user-attachments/assets/6413b96c-67aa-43ff-bb83-15ccc21080b9" />
+Wallet Connection
+<img width="1428" height="1612" alt="image" src="https://github.com/user-attachments/assets/09fc95e0-3274-4d17-b3fa-2851ca9808b3" />
 
 Dashboard
 <img width="2992" height="1658" alt="image" src="https://github.com/user-attachments/assets/97111986-f976-47bb-83b2-4ab9a007990e" />
