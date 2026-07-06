@@ -7,10 +7,11 @@ const blockchain = require("../services/blockchainService");
 // ===============================
 const checkCompliance = async (req, res) => {
   try {
-    const assetType = req.body.assetType.trim();
-const wallet = req.body.wallet.trim();
-const investorCountry = req.body.investorCountry.trim();
-const jurisdiction = req.body.jurisdiction.trim();
+    const assetType = req.body.assetType?.trim();
+    const wallet = req.body.wallet?.trim();
+    const investorCountry = req.body.investorCountry?.trim();
+    const jurisdiction = req.body.jurisdiction?.trim();
+
     // Validation
     if (!assetType || !wallet || !investorCountry) {
       return res.status(400).json({
@@ -28,32 +29,51 @@ const jurisdiction = req.body.jurisdiction.trim();
     });
 
     // Gemini Explanation
-    const explanation = await generateExplanation({
-      assetType,
-      wallet,
-      investorCountry,
-      jurisdiction,
-      risk: result.risk,
-      status: result.status,
-      factors: result.factors,
-    });
+    let explanation;
 
-    // Store on Blockchain
-    await blockchain.storeAttestation({
-      wallet,
-      assetType,
-      jurisdiction,
-      investorCountry,
-      riskScore: result.risk,
-      result: result.status,
-      timestamp: new Date().toISOString(),
-    });
+    try {
+      explanation = await generateExplanation({
+        assetType,
+        wallet,
+        investorCountry,
+        jurisdiction,
+        risk: result.risk,
+        status: result.status,
+        factors: result.factors,
+      });
+    } catch (err) {
+      console.log("Gemini unavailable:", err.message);
 
-    // Get latest blockchain ID
-    const lastId = await blockchain.getLastId();
+      explanation =
+        "AI explanation is temporarily unavailable. The compliance decision was generated using the rule-based risk engine.";
+    }
 
-    // Fetch stored record
-    const blockchainRecord = await blockchain.getAttestation(lastId);
+    // -------------------------------
+    // Blockchain (Cloud Safe)
+    // -------------------------------
+    let lastId = "LOCAL-DEMO";
+    let blockchainRecord = null;
+    let blockchainHash = "Blockchain unavailable";
+
+    try {
+      await blockchain.storeAttestation({
+        wallet,
+        assetType,
+        jurisdiction,
+        investorCountry,
+        riskScore: result.risk,
+        result: result.status,
+        timestamp: new Date().toISOString(),
+      });
+
+      lastId = await blockchain.getLastId();
+
+      blockchainRecord = await blockchain.getAttestation(lastId);
+
+      blockchainHash = `Attestation #${lastId}`;
+    } catch (err) {
+      console.log("Blockchain skipped:", err.message);
+    }
 
     return res.json({
       success: true,
@@ -62,11 +82,8 @@ const jurisdiction = req.body.jurisdiction.trim();
       risk: result.risk,
       factors: result.factors,
       explanation,
-    
-      // Keep the same field name expected by the frontend
-      blockchainHash: `Attestation #${lastId}`,
-blockchainRecord,
-    
+      blockchainHash,
+      blockchainRecord,
       timestamp: new Date().toISOString(),
     });
 
@@ -149,6 +166,7 @@ module.exports = {
   getLastId,
   getAttestation,
 };
+
 console.log({
   checkCompliance: typeof checkCompliance,
   whoami: typeof whoami,
