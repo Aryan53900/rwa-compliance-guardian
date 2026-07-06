@@ -31,6 +31,10 @@ RWA Compliance Guardian combines:
 
 The result is an end-to-end compliance workflow that is transparent, scalable, and suitable for modern tokenized asset ecosystems.
 
+Casper Testnet Smart Contract Package Hash:
+
+** hash-0e179dec639c35db76da16719be86f14f254645e3760456ddb9005f15ffbd56c ** 
+
 ✨ Key Features
 AI-powered compliance assessments
 Rule-based risk scoring engine
